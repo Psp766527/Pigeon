@@ -1,0 +1,6 @@
+services:
+  mongodb:
+    environment:
+      - MONGO_INITDB_DATABASE=localdb
+      - MONGO_INITDB_ROOT_USERNAME=localuser
+      - MONGO_INITDB_ROOT_PASSWORD=localpass

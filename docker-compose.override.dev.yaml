@@ -1,0 +1,6 @@
+services:
+  mongodb:
+    environment:
+      - MONGO_INITDB_DATABASE=devdb
+      - MONGO_INITDB_ROOT_USERNAME=devuser
+      - MONGO_INITDB_ROOT_PASSWORD=devpass

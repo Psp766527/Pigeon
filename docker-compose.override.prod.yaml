@@ -1,0 +1,6 @@
+services:
+  mongodb:
+    environment:
+      - MONGO_INITDB_DATABASE=proddb
+      - MONGO_INITDB_ROOT_USERNAME=produser
+      - MONGO_INITDB_ROOT_PASSWORD=prodpass

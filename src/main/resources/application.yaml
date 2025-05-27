@@ -1,0 +1,13 @@
+server:
+  port: 8084
+
+localization:
+  default-locale: en
+
+spring:
+  application:
+    name: pigeon
+
+  profiles:
+    active: dev
+

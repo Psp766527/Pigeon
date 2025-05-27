@@ -1,0 +1,26 @@
+spring:
+  pigeon:
+    kafka:
+      bootstrap-servers: localhost:9092
+      consumer:
+        group-id: dev-group
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        auto-offset-reset: none
+        enable-auto-commit: true
+        topic: pigeon-dev-events
+      producer:
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.apache.kafka.common.serialization.StringSerializer
+        acks: all
+        retries: 3
+        batch.size: 16384
+        linger.ms: 1
+        buffer.memory: 33554432
+        retry.BackOffPeriod: 2000
+        retry.MaxRetryAttempts: 4
+
+  logging:
+    level:
+      org.springframework.graphql: TRACE
+      org.springframework.boot.autoconfigure: DEBUG

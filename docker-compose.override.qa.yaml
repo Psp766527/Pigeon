@@ -1,0 +1,6 @@
+services:
+  mongodb:
+    environment:
+      - MONGO_INITDB_DATABASE=qadb
+      - MONGO_INITDB_ROOT_USERNAME=qauser
+      - MONGO_INITDB_ROOT_PASSWORD=qapass
