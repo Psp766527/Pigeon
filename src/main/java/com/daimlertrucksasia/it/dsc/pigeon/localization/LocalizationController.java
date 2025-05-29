@@ -4,13 +4,13 @@ import com.daimlertrucksasia.it.dsc.pigeon.localization.infra.MessageRepository;
 import com.daimlertrucksasia.it.dsc.pigeon.localization.model.LocalizedMessageEntity;
 import com.daimlertrucksasia.it.dsc.pigeon.localization.model.LocalizedMsgRequest;
 
+import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLNonNull;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.stereotype.Component;
 
 /**
@@ -82,7 +82,7 @@ public class LocalizationController {
      * @return the persisted {@link LocalizedMessageEntity}
      */
     @GraphQLMutation(name = "createMsgTemplate", deprecationReason = "MSG template Registration")
-    public LocalizedMessageEntity createLocalizedMsg(@Argument(name = "newMsg") @GraphQLNonNull @Valid LocalizedMsgRequest newMsg) {
+    public LocalizedMessageEntity createLocalizedMsg(@GraphQLArgument(name = "newMsg") @GraphQLNonNull @Valid LocalizedMsgRequest newMsg) {
         return messageRepo.save(LocalizedMessageEntity.builder()
                 .locale(newMsg.getLocale())
                 .message(newMsg.getMessage())

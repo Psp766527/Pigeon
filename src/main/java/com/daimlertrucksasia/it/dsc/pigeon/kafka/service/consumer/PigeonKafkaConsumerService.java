@@ -1,8 +1,12 @@
 package com.daimlertrucksasia.it.dsc.pigeon.kafka.service.consumer;
 
+import com.daimlertrucksasia.it.dsc.pigeon.kafka.service.producer.PigeonKafkaProducerService;
+import com.daimlertrucksasia.it.dsc.pigeon.localization.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import java.util.Locale;
 
 /**
  * Kafka consumer service for listening to messages published to Kafka topics by the Pigeon system.
@@ -29,6 +33,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class PigeonKafkaConsumerService {
 
+
+    private final MessageService messageService;
+
+    private final PigeonKafkaProducerService pigeonKafkaProducerService;
+
+    public PigeonKafkaConsumerService( MessageService messageService,PigeonKafkaProducerService pigeonKafkaProducerService) {
+        this.messageService = messageService;
+        this.pigeonKafkaProducerService = pigeonKafkaProducerService;
+    }
     /**
      * Consumes messages from the configured Kafka topic.
      * This method is automatically triggered when a new message is published to the topic.
@@ -42,8 +55,8 @@ public class PigeonKafkaConsumerService {
 
 
 
-            log.debug("Processing message: {}", message);
-
+            log.info("Result : {}",messageService.getMessage(message,new Object[]{"Pradeep"}, Locale.ENGLISH));
+            pigeonKafkaProducerService.sendMsg("","","");
 
         } catch (Exception ex) {
             log.error("Error processing Kafka message: {}", message, ex);

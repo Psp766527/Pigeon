@@ -20,6 +20,11 @@ spring:
         retry.BackOffPeriod: 2000
         retry.MaxRetryAttempts: 4
 
+  data:
+    mongodb:
+      host: mongodb
+      port: 27017
+
   logging:
     level:
       org.springframework.graphql: TRACE
