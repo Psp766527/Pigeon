@@ -21,7 +21,7 @@ import java.util.Locale;
  * <p>
  * Example:
  * <pre>
- *     @KafkaListener(topics = "your-topic", groupId = "your-group")
+ *     @KafkaListener(topics = "topic", groupId = "group")
  *     public void consume(String message) {
  *         // handle message
  *     }
@@ -52,9 +52,6 @@ public class PigeonKafkaConsumerService {
     public void consume(String message) {
         log.info("Received message from Kafka: {}", message);
         try {
-
-
-
             log.info("Result : {}",messageService.getMessage(message,new Object[]{"Pradeep"}, Locale.ENGLISH));
             pigeonKafkaProducerService.sendMsg("","","");
 

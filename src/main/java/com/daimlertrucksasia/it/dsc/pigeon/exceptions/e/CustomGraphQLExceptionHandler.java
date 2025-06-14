@@ -23,25 +23,49 @@ import java.util.concurrent.CompletableFuture;
 
 import static io.leangen.graphql.util.ClassFinder.log;
 
+/**
+ * Custom GraphQL Exception Handler to centralize exception translation and provide localized, structured error responses.
+ * <p>
+ * This handler intercepts exceptions thrown from GraphQL resolvers and maps them to custom {@link GraphQLErrorResponse}
+ * with relevant HTTP status, error codes, messages, and details.
+ * <p>
+ * Supported exceptions include:
+ * - {@link ResourceNotFoundException}
+ * - {@link ValidationException}
+ * - {@link MongoSocketException}
+ * - {@link MongoException}
+ * - Any {@link Throwable} (as fallback)
+ * <p>
+ * Error messages are localized using {@link MessageService} and logged appropriately.
+ */
 @Component
 public class CustomGraphQLExceptionHandler implements DataFetcherExceptionHandler {
 
+    /** Message service for localization */
     @Autowired
     private final MessageService messageService;
 
+    /** Kafka producer used for optional logging/event publishing (not actively used in this handler) */
     @Autowired
     private final PigeonKafkaProducerService pigeonKafkaProducerService;
 
+    /** Map to store exception-to-response translation handlers */
     private final Map<Class<? extends Throwable>, Function<DataFetcherExceptionHandlerParameters, GraphQLErrorResponse>> handlers;
 
+    /**
+     * Constructor to initialize exception handler mappings.
+     *
+     * @param messageService the message service for i18n support
+     * @param pigeonKafkaProducerService Kafka producer for optional logging/notifications
+     */
     public CustomGraphQLExceptionHandler(MessageService messageService, PigeonKafkaProducerService pigeonKafkaProducerService) {
-
         this.messageService = messageService;
         this.pigeonKafkaProducerService = pigeonKafkaProducerService;
 
-
         handlers = new HashMap<>();
-        Function<DataFetcherExceptionHandlerParameters, GraphQLErrorResponse> notFound = handlers.put(ResourceNotFoundException.class, params -> GraphQLErrorResponse.builder()
+
+        // Specific handler for ResourceNotFoundException
+        handlers.put(ResourceNotFoundException.class, params -> GraphQLErrorResponse.builder()
                 .message(params.getException().getMessage())
                 .status(400)
                 .errorCode("NOT_FOUND")
@@ -50,9 +74,12 @@ public class CustomGraphQLExceptionHandler implements DataFetcherExceptionHandle
                 .locations(List.of(params.getSourceLocation()))
                 .timestamp(OffsetDateTime.now())
                 .build());
+
+        // Handler for bean validation exceptions
         handlers.put(ValidationException.class, params -> GraphQLErrorResponse.builder()
-                .message(messageService.getMessage(params.getException().getMessage() != null ? params.getException().getMessage() :
-                        "In-Valid GraphQL Query/Mutation", Locale.ENGLISH))
+                .message(messageService.getMessage(
+                        params.getException().getMessage() != null ? params.getException().getMessage() : "In-Valid GraphQL Query/Mutation",
+                        Locale.ENGLISH))
                 .status(400)
                 .errorCode("VALIDATION_FAILED")
                 .details("New Details")
@@ -60,9 +87,12 @@ public class CustomGraphQLExceptionHandler implements DataFetcherExceptionHandle
                 .locations(List.of(params.getSourceLocation()))
                 .timestamp(OffsetDateTime.now())
                 .build());
+
+        // Handler for MongoDB socket exceptions (e.g., connectivity issues)
         handlers.put(MongoSocketException.class, params -> GraphQLErrorResponse.builder()
-                .message(messageService.getMessage(params.getException().getMessage() != null ? params.getException().getMessage() :
-                        "Error while Executing DB Query", Locale.ENGLISH))
+                .message(messageService.getMessage(
+                        params.getException().getMessage() != null ? params.getException().getMessage() : "Error while Executing DB Query",
+                        Locale.ENGLISH))
                 .status(400)
                 .errorCode("VALIDATION_FAILED")
                 .details("New Details")
@@ -70,9 +100,12 @@ public class CustomGraphQLExceptionHandler implements DataFetcherExceptionHandle
                 .locations(List.of(params.getSourceLocation()))
                 .timestamp(OffsetDateTime.now())
                 .build());
+
+        // Handler for generic MongoDB exceptions
         handlers.put(MongoException.class, params -> GraphQLErrorResponse.builder()
-                .message(messageService.getMessage(params.getException().getMessage() != null ? params.getException().getMessage() :
-                        "Error while Executing DB Query", Locale.ENGLISH))
+                .message(messageService.getMessage(
+                        params.getException().getMessage() != null ? params.getException().getMessage() : "Error while Executing DB Query",
+                        Locale.ENGLISH))
                 .status(400)
                 .errorCode("VALIDATION_FAILED")
                 .details("New Details")
@@ -80,9 +113,13 @@ public class CustomGraphQLExceptionHandler implements DataFetcherExceptionHandle
                 .locations(List.of(params.getSourceLocation()))
                 .timestamp(OffsetDateTime.now())
                 .build());
+
+        // Fallback handler for all other uncaught exceptions
         handlers.put(Throwable.class, params -> GraphQLErrorResponse.builder()
-                .message(messageService.getMessage(params.getException().getMessage() != null ? params.getException().getMessage() :
-                        "Internal Server Error", Locale.ENGLISH)).status(400)
+                .message(messageService.getMessage(
+                        params.getException().getMessage() != null ? params.getException().getMessage() : "Internal Server Error",
+                        Locale.ENGLISH))
+                .status(400)
                 .errorCode("INTERNAL_SERVER_ERROR")
                 .details("Nothing to Show")
                 .path(params.getPath().toList())
@@ -91,6 +128,15 @@ public class CustomGraphQLExceptionHandler implements DataFetcherExceptionHandle
                 .build());
     }
 
+    /**
+     * Handles exceptions thrown during GraphQL data fetching.
+     *
+     * Looks up the appropriate handler for the thrown exception and builds a {@link DataFetcherExceptionHandlerResult}
+     * to return as a GraphQL error response.
+     *
+     * @param parameters the parameters including the exception and source location
+     * @return a completed future containing the error result
+     */
     @Override
     public CompletableFuture<DataFetcherExceptionHandlerResult> handleException(DataFetcherExceptionHandlerParameters parameters) {
         Throwable exception = parameters.getException();
@@ -100,7 +146,7 @@ public class CustomGraphQLExceptionHandler implements DataFetcherExceptionHandle
                 .filter(entry -> entry.getKey().isInstance(exception))
                 .findFirst()
                 .map(entry -> entry.getValue().apply(parameters))
-                .orElse(handlers.get(Throwable.class).apply(parameters));
+                .orElse(handlers.get(Throwable.class).apply(parameters)); // fallback
 
         DataFetcherExceptionHandlerResult result = DataFetcherExceptionHandlerResult.newResult()
                 .error(error)

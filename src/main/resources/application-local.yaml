@@ -1,7 +1,7 @@
 spring:
   pigeon:
     kafka:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: localhost:30091,localhost:30093,localhost:30094
       consumer:
         group-id: local-group
         key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
