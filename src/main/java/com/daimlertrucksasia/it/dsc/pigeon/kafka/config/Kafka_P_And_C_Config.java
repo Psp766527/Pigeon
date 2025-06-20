@@ -116,6 +116,27 @@ public class Kafka_P_And_C_Config {
     }
 
     /**
+     * Kafka Listener Container Factory Bean configuration.
+     * <p>
+     * This factory is used by Spring Kafka to create listener containers for consuming messages.
+     * It supports batch consumption and concurrent message processing.
+     *
+     * @param consumerFactory the Kafka ConsumerFactory used to create Kafka consumers
+     * @return a configured ConcurrentKafkaListenerContainerFactory
+     */
+    @Bean
+    @Qualifier("kafkaListenerContainerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(
+            ConsumerFactory<String, String> consumerFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory);
+        factory.setBatchListener(true);
+        factory.setConcurrency(5);
+        return factory;
+    }
+
+    /**
      * Configures a {@link ConcurrentKafkaListenerContainerFactory} for concurrent Kafka listeners.
      *
      * <p>This factory enables support for concurrent Kafka message consumption using the
@@ -123,8 +144,8 @@ public class Kafka_P_And_C_Config {
      * @return a configured {@link ConcurrentKafkaListenerContainerFactory} bean
      * @KafkaListener annotation. It uses the {@code consumerFactory()} bean to create consumers.</p>
      */
-    @Bean
-    @Qualifier("kafkaListenerContainerFactory")
+    //@Bean
+    //@Qualifier("kafkaListenerContainerFactory")
     public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(kafkaPigeonConsumerFactory());

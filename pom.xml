@@ -18,7 +18,13 @@
         <license/>
     </licenses>
     <developers>
-        <developer/>
+        <developer>
+            <id>KUSHWPR</id>
+            <name>Pradeep Kushwah</name>
+            <email>cubastion.kushwah@daimlertruck.com</email>
+            <organization>DaimlerTrucksAsia</organization>
+            <organizationUrl>https://asia.daimlertruck.com/en/</organizationUrl>
+        </developer>
     </developers>
     <scm>
         <connection/>
@@ -83,7 +89,7 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
-             <!-- or latest version -->
+            <!-- or latest version -->
         </dependency>
         <!-- Spring Retry Framework to Publish & Consume Msg to or from the Kafka Broker-->
         <dependency>
@@ -95,13 +101,13 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-<!--
-        <dependency>
-            <groupId>org.springframework.graphql</groupId>
-            <artifactId>spring-graphql-test</artifactId>
-            <scope>test</scope>
-        </dependency>
--->
+        <!--
+                <dependency>
+                    <groupId>org.springframework.graphql</groupId>
+                    <artifactId>spring-graphql-test</artifactId>
+                    <scope>test</scope>
+                </dependency>
+        -->
 
 
         <dependency>

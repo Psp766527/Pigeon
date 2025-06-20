@@ -8,6 +8,7 @@ spring:
         value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
         auto-offset-reset: none
         enable-auto-commit: true
+        max-poll-records: 500
         topic: pigeon-local-events
       producer:
         key-serializer: org.apache.kafka.common.serialization.StringSerializer

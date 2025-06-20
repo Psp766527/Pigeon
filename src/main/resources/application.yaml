@@ -1,12 +1,12 @@
 server:
-  port: 8084
+  port: 8085
 
 localization:
   default-locale: en
 
 spring:
   application:
-    name: pigeon
+    name: Pigeon
 
   profiles:
     active: dev
